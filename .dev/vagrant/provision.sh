@@ -6,6 +6,8 @@ exec 2>&1
   export DEBIAN_FRONTEND=noninteractive
   unset PACKAGES
 
+  sudo rm /var/lib/apt/lists/* -vrf
+
   PACKAGES="curl git bzr"
   sudo -E -H apt-get update
   sudo -E -H apt-get install -y -q --no-install-recommends ${PACKAGES}
@@ -13,7 +15,7 @@ exec 2>&1
   unset gover
   gover=1.6
 
-  curl -o go${gover}.linux-amd64.tar.gz https://storage.googleapis.com/golang/go${gover}.linux-amd64.tar.gz
+  curl -os go${gover}.linux-amd64.tar.gz https://storage.googleapis.com/golang/go${gover}.linux-amd64.tar.gz
   sudo tar -C /usr/local -xzf go${gover}.linux-amd64.tar.gz
   [ -f go${gover}.linux-amd64.tar.gz ] && rm go${gover}.linux-amd64.tar.gz
 
