@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+exec 2>&1
 
 [ -f /usr/local/go/bin/go ] || {
   export DEBIAN_FRONTEND=noninteractive
@@ -15,6 +17,7 @@
   sudo tar -C /usr/local -xzf go${gover}.linux-amd64.tar.gz
   [ -f go${gover}.linux-amd64.tar.gz ] && rm go${gover}.linux-amd64.tar.gz
 
+  touch .bash_profile
   grep 'export GOROOT=' .bash_profile || ( echo export GOROOT=/usr/local/go | tee -a .bash_profile )
   grep 'export GOPATH=' .bash_profile || ( echo export GOPATH=/vagrant/go | tee -a .bash_profile )
   source .bash_profile
