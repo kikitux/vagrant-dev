@@ -1,28 +1,33 @@
 #!/bin/bash
 
-echo "Setting up dev environment"
-sleep 40
+[ -f /usr/local/go/bin/go ] || {
+  export DEBIAN_FRONTEND=noninteractive
+  unset PACKAGES
 
-apt-get update --no-install-recommends
-apt-get install -y curl vim git bzr mercurial
+  PACKAGES="curl git bzr"
+  sudo -E -H apt-get update
+  sudo -E -H apt-get install -y -q --no-install-recommends ${PACKAGES}
 
-[ -f /vagrant/tmp/go1.6.linux-amd64.tar.gz ] || {
-  mkdir -p /vagrant/tmp
-  pushd /vagrant/tmp
-  curl -o go1.6.linux-amd64.tar.gz https://storage.googleapis.com/golang/go1.6.linux-amd64.tar.gz
-  popd
+  unset gover
+  gover=1.6
+
+  curl -o go${gover}.linux-amd64.tar.gz https://storage.googleapis.com/golang/go${gover}.linux-amd64.tar.gz
+  sudo tar -C /usr/local -xzf go${gover}.linux-amd64.tar.gz
+  [ -f go${gover}.linux-amd64.tar.gz ] && rm go${gover}.linux-amd64.tar.gz
+
+  grep 'export GOROOT=' .bash_profile || ( echo export GOROOT=/usr/local/go | tee -a .bash_profile )
+  grep 'export GOPATH=' .bash_profile || ( echo export GOPATH=/vagrant/go | tee -a .bash_profile )
+  source .bash_profile
+  grep 'export PATH=' .bash_profile || ( echo export PATH=$PATH:$GOROOT/bin:$GOPATH/bin | tee -a .bash_profile)
 }
 
-[ -d /usr/local/go ] || sudo tar -C /usr/local -xzf /vagrant/tmp/go1.6.linux-amd64.tar.gz
-
-grep 'export GOROOT=' .bash_profile || ( echo export GOROOT=/usr/local/go | tee -a .bash_profile )
-grep 'export GOPATH=' .bash_profile || ( echo export GOPATH=/vagrant/go | tee -a .bash_profile )
-source .bash_profile
-grep 'export PATH=' .bash_profile || ( echo export PATH=$PATH:$GOROOT/bin:$GOPATH/bin | tee -a .bash_profile)
+echo "Setting up dev environment"
 source .bash_profile
 mkdir -p $GOPATH
 
-go get github.com/Masterminds/glide
-cd $GOPATH/src/github.com/Masterminds/glide && make bootstrap && make build && make install
+[ -d $GOPATH/src/github.com/Masterminds/glide ] || {
+  go get github.com/Masterminds/glide
+  cd $GOPATH/src/github.com/Masterminds/glide && make bootstrap && make build && make install
+}
 
 echo "everything should be ready to dev"
