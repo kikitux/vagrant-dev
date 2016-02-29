@@ -15,7 +15,7 @@ exec 2>&1
   unset gover
   gover=1.6
 
-  curl -os go${gover}.linux-amd64.tar.gz https://storage.googleapis.com/golang/go${gover}.linux-amd64.tar.gz
+  curl -s -o go${gover}.linux-amd64.tar.gz https://storage.googleapis.com/golang/go${gover}.linux-amd64.tar.gz
   sudo tar -C /usr/local -xzf go${gover}.linux-amd64.tar.gz
   [ -f go${gover}.linux-amd64.tar.gz ] && rm go${gover}.linux-amd64.tar.gz
 
